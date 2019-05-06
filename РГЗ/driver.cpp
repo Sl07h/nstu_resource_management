@@ -9,7 +9,7 @@
 LPCWSTR		szClassName = L"MyClass";
 LPCWSTR		szTitle = L"Индивидуальное задание по УРВС";
 TCHAR		YearInfo[256];
-TCHAR		L1CashInfo[256];
+TCHAR		L1CacheInfo[256];
 
 
 // Функция выполняющаяся в отдельном потоке
@@ -30,9 +30,9 @@ DWORD WINAPI ThreadFunc(void *)
 	// Интерпретация выходных данных функции DLLInfo
 	wsprintf(YearInfo, L"Текущий год: %d", currentYear);
 	if (isAssociative)
-		wsprintf(L1CashInfo, L"КЭШ первого уровня ассоциативен");
+		wsprintf(L1CacheInfo, L"КЭШ первого уровня ассоциативен");
 	else
-		wsprintf(L1CashInfo, L"КЭШ первого уровня неассоциативен");
+		wsprintf(L1CacheInfo, L"КЭШ первого уровня неассоциативен");
 
 	return 0;
 }
@@ -68,7 +68,7 @@ LRESULT CALLBACK WindowFunc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 			hDC = BeginPaint(hWnd, &ps);
 			SelectObject(hDC, hFont);				// Меняем шрифт
 			TextOut(hDC, 15, 17, YearInfo, 256);
-			TextOut(hDC, 15, 42, L1CashInfo, 256);
+			TextOut(hDC, 15, 42, L1CacheInfo, 256);
 			EndPaint(hWnd, &ps);
 			break;
 
