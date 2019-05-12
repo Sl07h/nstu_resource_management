@@ -7,32 +7,29 @@
 
 
 LPCWSTR		szClassName = L"MyClass";
-LPCWSTR		szTitle = L"Индивидуальное задание по УРВС";
-TCHAR		YearInfo[256];
-TCHAR		L1CacheInfo[256];
-
+LPCWSTR		szTitle = L"Individual work - resource managment";
+TCHAR		ScreenInfo[256];
+TCHAR		MMXInfo[256];
 
 // Функция выполняющаяся в отдельном потоке
 DWORD WINAPI ThreadFunc(void *)
 {
-	// Подключаем динамическую библиотеку
-	typedef int(*ImportFunction)(int &, bool &);
-	ImportFunction DLLInfo;
+	typedef int(*ImportFunction)(int&, bool&);
+	ImportFunction DLLInfo; // Подключаем динамическую библиотеку
 	HINSTANCE hinstLib = LoadLibrary(TEXT("info.dll"));
 	DLLInfo = (ImportFunction)GetProcAddress(hinstLib, "Information");
 
-
-	int currentYear = -9000;
-	bool isAssociative = false;
-	DLLInfo(currentYear, isAssociative);
-	FreeLibrary(hinstLib);
+	int maxWidth = 0;
+	bool isMMXSupported = false;
+	DLLInfo(maxWidth, isMMXSupported); // Получаем данные
+	FreeLibrary(hinstLib); // Высвобождаем библиотеку
 
 	// Интерпретация выходных данных функции DLLInfo
-	wsprintf(YearInfo, L"Текущий год: %d", currentYear);
-	if (isAssociative)
-		wsprintf(L1CacheInfo, L"КЭШ первого уровня ассоциативен");
+	wsprintf(ScreenInfo, L"Max screen width is: %d px", maxWidth);
+	if (isMMXSupported)
+		wsprintf(MMXInfo, L"MMX techology is supported");
 	else
-		wsprintf(L1CacheInfo, L"КЭШ первого уровня неассоциативен");
+		wsprintf(MMXInfo, L"MMX techology isn't supported");
 
 	return 0;
 }
@@ -43,8 +40,9 @@ LRESULT CALLBACK WindowFunc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	PAINTSTRUCT ps;
 	HDC hDC;
-	HFONT hFont = CreateFont(18, 0, 0, 0, FW_THIN, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
-							CLIP_DEFAULT_PRECIS, CLEARTYPE_NATURAL_QUALITY, VARIABLE_PITCH, TEXT("Calibri"));
+	// Создание шрифтра
+	HFONT hFont = CreateFont(20, 0, 0, 0, FW_THIN, FALSE, FALSE, FALSE, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS,
+		CLIP_DEFAULT_PRECIS, CLEARTYPE_NATURAL_QUALITY, VARIABLE_PITCH, TEXT("Calibri"));
 
 	switch (msg)
 	{
@@ -64,11 +62,11 @@ LRESULT CALLBACK WindowFunc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 		// Инициализация контекста устройства
 		case WM_PAINT:
-		
+
 			hDC = BeginPaint(hWnd, &ps);
-			SelectObject(hDC, hFont);				// Меняем шрифт
-			TextOut(hDC, 15, 17, YearInfo, 256);
-			TextOut(hDC, 15, 42, L1CacheInfo, 256);
+			SelectObject(hDC, hFont); // Меняем шрифт
+			TextOut(hDC, 15, 10, ScreenInfo, 256);
+			TextOut(hDC, 15, 30, MMXInfo, 256);
 			EndPaint(hWnd, &ps);
 			break;
 
@@ -88,27 +86,31 @@ int WINAPI WinMain(HINSTANCE hThisInst,
 	HWND hWnd;
 
 	// Создание класса окна
-	wcl.hInstance		= hThisInst;
-	wcl.lpszClassName	= szClassName;
-	wcl.lpfnWndProc		= WindowFunc;
-	wcl.style			= CS_HREDRAW | CS_VREDRAW;
-	wcl.hIcon			= LoadIcon(NULL, IDI_APPLICATION);
-	wcl.hCursor			= LoadCursor(NULL, IDC_ARROW);
-	wcl.lpszMenuName	= NULL;
-	wcl.cbClsExtra		= 0;
-	wcl.cbWndExtra		= 0;
-	wcl.hbrBackground	= (HBRUSH)GetStockObject(WHITE_BRUSH);
+	wcl.hInstance			= hThisInst;
+	wcl.lpszClassName		= szClassName;
+	wcl.lpfnWndProc			= WindowFunc;
+	wcl.style				= CS_HREDRAW | CS_VREDRAW;
+	wcl.hIcon				= LoadIcon(NULL, IDI_APPLICATION);
+	wcl.hCursor				= LoadCursor(NULL, IDC_ARROW);
+	wcl.lpszMenuName		= NULL;
+	wcl.cbClsExtra			= 0;
+	wcl.cbWndExtra			= 0;
+	wcl.hbrBackground		= (HBRUSH)GetStockObject(WHITE_BRUSH);
+
 	// Регистрация класса окна
 	RegisterClass(&wcl);
+
 	// Создание окна на базе его класса
 	hWnd = CreateWindow(szClassName, szTitle,
 		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN |
 		WS_CLIPSIBLINGS,
 		100, 50, 700, 120, HWND_DESKTOP,
 		NULL, hThisInst, NULL);
+
 	// Отображение окна
 	ShowWindow(hWnd, nWinMode);
 	UpdateWindow(hWnd);
+
 	// Цикл обработки сообщений
 	while (GetMessage(&msg, NULL, 0, 0))
 	{
