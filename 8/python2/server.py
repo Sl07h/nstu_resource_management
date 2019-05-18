@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import socket
 from os import system as run_bash_command
 from sys import argv
@@ -9,7 +10,7 @@ serverNumber = int(argv[3])
 folderToSearch = str(argv[4])
 
 
-print("Server ", str(serverNumber), " is listening on IP: ", ipAddress + " port: ", (port))
+print "Server ", str(serverNumber), " is listening on IP: ", ipAddress + " port: ", (port)
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
@@ -31,4 +32,4 @@ while(l):
 
 sock.close()
 
-print("Server ", str(serverNumber), " sent his answer to the main server")
+print "Server ", str(serverNumber), " sent his answer to the main server"

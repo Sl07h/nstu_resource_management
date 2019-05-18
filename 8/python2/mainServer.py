@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import socket
 from threading import Thread
 from sys import argv
@@ -48,6 +49,7 @@ for i in threads:
     i.join()
 
 f.close()
+f_s.close();
 
 f = open("answer.txt", "rb")
 l = f.read(1024)
@@ -57,3 +59,5 @@ while(l):
 f.close()
 sock.close()
 print("Main server sent his answer to client")
+
+
