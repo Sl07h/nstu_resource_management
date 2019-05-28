@@ -3,6 +3,7 @@ import socket
 from threading import Thread
 from sys import argv
 
+# Парсим адрес и порт главного сервера
 ipAddress = str(argv[1])
 port = int(argv[2])
 
@@ -23,11 +24,11 @@ def findData(_ip, _port, _pattern, f):
 
 #-------------------------------------------------------------------------------
 #-------------------------------------------------------------------------------
-sock = socket.socket()
-sock.bind((ipAddress, port))
-sock.listen(1)
-conn_to_client, addr = sock.accept()
-pattern = conn_to_client.recv(1024)
+sock = socket.socket() # создаём сокет
+sock.bind((ipAddress, port)) # настраиваем адрес
+sock.listen(1) # прослушиваем порт
+conn_to_client, addr = sock.accept() # принимаем соединение
+pattern = conn_to_client.recv(1024) # принимаем запрос
 
 
 #-------------------------------------------------------------------------------
@@ -45,19 +46,19 @@ with open("servers.txt", 'r') as f_s:
         print(i)
 
 
+# Закрываем дочерние потоки
 for i in threads:
     i.join()
 
 f.close()
-f_s.close();
 
 f = open("answer.txt", "rb")
-l = f.read(1024)
-while(l):
-    conn_to_client.send(l)
-    l = f.read(1024)
+line = f.read(1024)
+while(line):
+    conn_to_client.send(line)
+    line = f.read(1024)
 f.close()
-sock.close()
-print("Main server sent his answer to client")
+sock.close() # освобождаем сокет
+print("Основной сервер отправил ответ клиенту")
 
 
